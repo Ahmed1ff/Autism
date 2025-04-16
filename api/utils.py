@@ -35,6 +35,8 @@ sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncas
 
 API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+print("API KEY:", API_KEY)
+print("Endpoint:", AZURE_OPENAI_ENDPOINT)
 
 # Screening Questions
 screening_questions = [
