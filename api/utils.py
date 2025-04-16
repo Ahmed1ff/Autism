@@ -9,34 +9,32 @@ from transformers import pipeline
 
 from dotenv import load_dotenv
 load_dotenv()
-
 logging.basicConfig(level=logging.INFO)
 
-# Load models
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # يُشير إلى مجلد api
 
-model_path = os.path.join(BASE_DIR, "Model", "autism_model.pkl")
-with open(model_path, "rb") as f:
+# تحميل النماذج باستخدام مسارات دقيقة
+autism_model_path = os.path.join(BASE_DIR, "Model", "autism_model.pkl")
+with open(autism_model_path, "rb") as f:
     autism_model = pickle.load(f)
 
-scaler_path = os.path.join(BASE_DIR, "Model", "autism_scaler.pkl")
-with open(scaler_path, "rb") as f:
+autism_scaler_path = os.path.join(BASE_DIR, "Model", "autism_scaler.pkl")
+with open(autism_scaler_path, "rb") as f:
     autism_scaler = pickle.load(f)
 
-level_model_path = os.path.join(BASE_DIR, "Model", "autismlevel_model.pkl")
-with open(level_model_path, "rb") as f:
+degree_model_path = os.path.join(BASE_DIR, "Model", "autismlevel_model.pkl")
+with open(degree_model_path, "rb") as f:
     degree_model = pickle.load(f)
 
-level_scaler_path = os.path.join(BASE_DIR, "Model", "autismlevel_scaler.pkl")
-with open(level_scaler_path, "rb") as f:
+degree_scaler_path = os.path.join(BASE_DIR, "Model", "autismlevel_scaler.pkl")
+with open(degree_scaler_path, "rb") as f:
     degree_scaler = pickle.load(f)
 
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-print("API KEY:", API_KEY)
-print("Endpoint:", AZURE_OPENAI_ENDPOINT)
+
 
 # Screening Questions
 screening_questions = [
