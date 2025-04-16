@@ -8,3 +8,5 @@ xgboost
 scikit-learn
 python-dotenv
 numpy
+torch==2.0.1
+
