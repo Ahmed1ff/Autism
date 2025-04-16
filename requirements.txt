@@ -7,5 +7,4 @@ transformers==4.47.0
 xgboost
 scikit-learn
 python-dotenv
-time
 numpy
