@@ -4,9 +4,9 @@ pydantic==1.10.7
 pandas==2.2.3
 requests==2.32.3
 transformers==4.47.0
-xgboost
-scikit-learn
+xgboost>=2.0.0          # أو لو عندك نسخة معينة انت عايزها، حطها
+scikit-learn==1.4.2     # نفس النسخة اللي عملت بيها pickle
 python-dotenv
-numpy
+numpy>=1.26.0           # علشان تحل مشكلة _ARRAY_API
 torch==2.0.1
-
+huggingface_hub[hf_xet] # لتحسين التحميل من HuggingFace
