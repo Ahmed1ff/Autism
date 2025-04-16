@@ -191,6 +191,7 @@ def process_screening_answer(index, answer):
         answer = answer.lower()
         return 1 if any(word in answer for word in ["male", "boy"]) else 0 if any(word in answer for word in ["female", "girl"]) else None
     else:
+        load_sentiment_analyzer()  # تحميل النموذج إذا لم يكن محملًا
         result = sentiment_analyzer(answer)[0]
         return 1 if result['label'] == "POSITIVE" else 0
 

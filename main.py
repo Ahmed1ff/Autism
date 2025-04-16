@@ -1,4 +1,3 @@
-# 📁 File: main.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
@@ -6,13 +5,20 @@ import re
 from memory_profiler import profile
 
 from utils import (
-    autism_model, autism_scaler, degree_model, degree_scaler,
-    sentiment_analyzer, get_azure_response, process_screening_answer,
+    load_autism_model, load_autism_scaler, load_degree_model, load_degree_scaler,
+    load_sentiment_analyzer, get_azure_response, process_screening_answer,
     bucket_age, check_relevance, screening_questions, degree_questions,
     degree_display_mappings_per_question
 )
 
 app = FastAPI()
+
+# ------------------ Load models once ------------------
+autism_model = load_autism_model()
+autism_scaler = load_autism_scaler()
+degree_model = load_degree_model()
+degree_scaler = load_degree_scaler()
+sentiment_analyzer = load_sentiment_analyzer()
 
 # ------------------ MODELS ------------------
 class RelevanceRequest(BaseModel):
@@ -38,7 +44,6 @@ class DegreeFinalRequest(BaseModel):
     age_in_years: float
     gender: int
     mapped_responses: list[str]  # 7 mapped answers
-
 
 # ------------------ SCREENING ENDPOINTS ------------------
 @app.get("/get_question/{index}")
@@ -70,7 +75,6 @@ def final_prediction(data: ScreeningRequest):
     scaled = autism_scaler.transform([data.answers])
     prediction = autism_model.predict(scaled)[0]
     return {"autism_prediction": int(prediction)}
-
 
 # ------------------ DEGREE ENDPOINTS ------------------
 @app.get("/get_degree_question/{index}")
@@ -162,4 +166,3 @@ def final_degree_prediction(data: DegreeFinalRequest):
     prediction = int(degree_model.predict(scaled)[0])
     del df
     return {"degree_prediction": prediction}
-
