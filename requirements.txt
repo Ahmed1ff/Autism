@@ -7,7 +7,6 @@ transformers==4.47.0
 xgboost
 scikit-learn
 python-dotenv
-re
 pickle
 time
 os
