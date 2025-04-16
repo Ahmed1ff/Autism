@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import pandas as pd
 import re
 
-from .utils import (
+from utils import (
     autism_model, autism_scaler, degree_model, degree_scaler,
     sentiment_analyzer, get_azure_response, process_screening_answer,
     bucket_age, check_relevance, screening_questions, degree_questions,
