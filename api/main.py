@@ -11,6 +11,7 @@ from .utils import (
     degree_display_mappings_per_question
 )
 
+
 app = FastAPI()
 
 # ------------------ MODELS ------------------
