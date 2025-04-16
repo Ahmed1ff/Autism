@@ -13,15 +13,27 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 # Load models
-with open("./Model/autism_model.pkl", "rb") as f:
-    autism_model = pickle.load(f)
-with open("./Model/autism_scaler.pkl", "rb") as f:
-    autism_scaler = pickle.load(f)
-with open("./Model/autismlevel_model.pkl", "rb") as f:
-    degree_model = pickle.load(f)
-with open("./Model/autismlevel_scaler.pkl", "rb") as f:
-    degree_scaler = pickle.load(f)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Load autism model
+model_path = os.path.join(BASE_DIR, "Model", "autism_model.pkl")
+with open(model_path, "rb") as f:
+    autism_model = pickle.load(f)
+
+# Load autism scaler
+scaler_path = os.path.join(BASE_DIR, "Model", "autism_scaler.pkl")
+with open(scaler_path, "rb") as f:
+    autism_scaler = pickle.load(f)
+
+# Load autism level model
+level_model_path = os.path.join(BASE_DIR, "Model", "autismlevel_model.pkl")
+with open(level_model_path, "rb") as f:
+    degree_model = pickle.load(f)
+
+# Load autism level scaler
+level_scaler_path = os.path.join(BASE_DIR, "Model", "autismlevel_scaler.pkl")
+with open(level_scaler_path, "rb") as f:
+    degree_scaler = pickle.load(f)
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 API_KEY = os.getenv("AZURE_API_KEY")
