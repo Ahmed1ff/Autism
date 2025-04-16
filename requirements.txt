@@ -8,5 +8,3 @@ scikit-learn==1.4.2     # نفس النسخة اللي عملتي بيها pickl
 python-dotenv
 numpy==1.26.4           # إصدار متوافق مع Torch 2.0.1
 torch==2.0.1
-huggingface_hub[hf_xet] # لتحسين التحميل من HuggingFace
-memory_profiler
