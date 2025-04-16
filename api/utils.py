@@ -13,13 +13,13 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 # Load models
-with open("../Model/autism_model.pkl", "rb") as f:
+with open("./Model/autism_model.pkl", "rb") as f:
     autism_model = pickle.load(f)
-with open("../Model/autism_scaler.pkl", "rb") as f:
+with open("./Model/autism_scaler.pkl", "rb") as f:
     autism_scaler = pickle.load(f)
-with open("../Model/autismlevel_model.pkl", "rb") as f:
+with open("./Model/autismlevel_model.pkl", "rb") as f:
     degree_model = pickle.load(f)
-with open("../Model/autismlevel_scaler.pkl", "rb") as f:
+with open("./Model/autismlevel_scaler.pkl", "rb") as f:
     degree_scaler = pickle.load(f)
 
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
