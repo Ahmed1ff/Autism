@@ -13,6 +13,10 @@ from .utils import (
 
 
 app = FastAPI()
+# Endpoint للجذر (root)
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI on Vercel!"}
 
 # ------------------ MODELS ------------------
 class RelevanceRequest(BaseModel):
