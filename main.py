@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import re
-from memory_profiler import profile
 
 from utils import (
     load_autism_model, load_autism_scaler, load_degree_model, load_degree_scaler,
