@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import re
+from memory_profiler import profile
 
 from utils import (
     autism_model, autism_scaler, degree_model, degree_scaler,
@@ -159,6 +160,6 @@ def final_degree_prediction(data: DegreeFinalRequest):
     df = df.reindex(columns=degree_scaler.feature_names_in_, fill_value=0)
     scaled = degree_scaler.transform(df)
     prediction = int(degree_model.predict(scaled)[0])
-
+    del df
     return {"degree_prediction": prediction}
 

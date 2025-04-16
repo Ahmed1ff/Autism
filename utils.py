@@ -14,24 +14,50 @@ logging.basicConfig(level=logging.INFO)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # يُشير إلى مجلد api
 
 # تحميل النماذج باستخدام مسارات دقيقة
-autism_model_path = os.path.join(BASE_DIR, "Model", "autism_model.pkl")
-with open(autism_model_path, "rb") as f:
-    autism_model = pickle.load(f)
+autism_model = None
+autism_scaler = None
+degree_model = None
+degree_scaler = None
+sentiment_analyzer = None
 
-autism_scaler_path = os.path.join(BASE_DIR, "Model", "autism_scaler.pkl")
-with open(autism_scaler_path, "rb") as f:
-    autism_scaler = pickle.load(f)
+# دوال التحميل المتأخر
+def load_autism_model():
+    global autism_model
+    if autism_model is None:
+        autism_model_path = os.path.join(BASE_DIR, "Model", "autism_model.pkl")
+        with open(autism_model_path, "rb") as f:
+            autism_model = pickle.load(f)
+    return autism_model
 
-degree_model_path = os.path.join(BASE_DIR, "Model", "autismlevel_model.pkl")
-with open(degree_model_path, "rb") as f:
-    degree_model = pickle.load(f)
+def load_autism_scaler():
+    global autism_scaler
+    if autism_scaler is None:
+        autism_scaler_path = os.path.join(BASE_DIR, "Model", "autism_scaler.pkl")
+        with open(autism_scaler_path, "rb") as f:
+            autism_scaler = pickle.load(f)
+    return autism_scaler
 
-degree_scaler_path = os.path.join(BASE_DIR, "Model", "autismlevel_scaler.pkl")
-with open(degree_scaler_path, "rb") as f:
-    degree_scaler = pickle.load(f)
+def load_degree_model():
+    global degree_model
+    if degree_model is None:
+        degree_model_path = os.path.join(BASE_DIR, "Model", "autismlevel_model.pkl")
+        with open(degree_model_path, "rb") as f:
+            degree_model = pickle.load(f)
+    return degree_model
 
-sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+def load_degree_scaler():
+    global degree_scaler
+    if degree_scaler is None:
+        degree_scaler_path = os.path.join(BASE_DIR, "Model", "autismlevel_scaler.pkl")
+        with open(degree_scaler_path, "rb") as f:
+            degree_scaler = pickle.load(f)
+    return degree_scaler
 
+def load_sentiment_analyzer():
+    global sentiment_analyzer
+    if sentiment_analyzer is None:
+        sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+    return sentiment_analyzer
 API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 
