@@ -6,6 +6,8 @@ import logging
 import re
 import os
 from transformers import pipeline
+from functools import lru_cache
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,6 +23,7 @@ degree_scaler = None
 sentiment_analyzer = None
 
 # دوال التحميل المتأخر
+@lru_cache()
 def load_autism_model():
     global autism_model
     if autism_model is None:
@@ -28,7 +31,7 @@ def load_autism_model():
         with open(autism_model_path, "rb") as f:
             autism_model = pickle.load(f)
     return autism_model
-
+@lru_cache()
 def load_autism_scaler():
     global autism_scaler
     if autism_scaler is None:
@@ -36,7 +39,7 @@ def load_autism_scaler():
         with open(autism_scaler_path, "rb") as f:
             autism_scaler = pickle.load(f)
     return autism_scaler
-
+@lru_cache()
 def load_degree_model():
     global degree_model
     if degree_model is None:
@@ -44,7 +47,7 @@ def load_degree_model():
         with open(degree_model_path, "rb") as f:
             degree_model = pickle.load(f)
     return degree_model
-
+@lru_cache()
 def load_degree_scaler():
     global degree_scaler
     if degree_scaler is None:
@@ -52,7 +55,7 @@ def load_degree_scaler():
         with open(degree_scaler_path, "rb") as f:
             degree_scaler = pickle.load(f)
     return degree_scaler
-
+@lru_cache()
 def load_sentiment_analyzer():
     global sentiment_analyzer
     if sentiment_analyzer is None:
