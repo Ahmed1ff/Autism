@@ -3,10 +3,7 @@
   "builds": [
     {
       "src": "api/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "include": ["api/*", "Model/*"]
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
