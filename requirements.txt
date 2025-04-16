@@ -9,6 +9,5 @@ scikit-learn
 python-dotenv
 pickle
 time
-os
 numpy
 dotenv
