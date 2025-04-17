@@ -11,6 +11,11 @@ from utils import (
 )
 
 app = FastAPI()
+# ------------------ Add Root Endpoint ------------------
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Autism Prediction API! This API helps assess autism likelihood and severity in children."}
+
 
 # ------------------ Load models once ------------------
 autism_model = load_autism_model()
