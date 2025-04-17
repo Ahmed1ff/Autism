@@ -7,4 +7,4 @@ transformers==4.47.0
 scikit-learn==1.4.2     # نفس النسخة اللي عملتي بيها pickle
 python-dotenv
 numpy==1.26.4           # إصدار متوافق مع Torch 2.0.1
-torch==2.0.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.0.1+cpu
