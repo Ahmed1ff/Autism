@@ -7,13 +7,13 @@ import re
 import os
 from transformers import pipeline
 from functools import lru_cache
-
+from fastapi import UploadFile
 
 from dotenv import load_dotenv
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # يُشير إلى مجلد api
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # تحميل النماذج باستخدام مسارات دقيقة
 autism_model = None
@@ -31,6 +31,7 @@ def load_autism_model():
         with open(autism_model_path, "rb") as f:
             autism_model = pickle.load(f)
     return autism_model
+
 @lru_cache()
 def load_autism_scaler():
     global autism_scaler
@@ -39,6 +40,7 @@ def load_autism_scaler():
         with open(autism_scaler_path, "rb") as f:
             autism_scaler = pickle.load(f)
     return autism_scaler
+
 @lru_cache()
 def load_degree_model():
     global degree_model
@@ -47,6 +49,7 @@ def load_degree_model():
         with open(degree_model_path, "rb") as f:
             degree_model = pickle.load(f)
     return degree_model
+
 @lru_cache()
 def load_degree_scaler():
     global degree_scaler
@@ -55,15 +58,18 @@ def load_degree_scaler():
         with open(degree_scaler_path, "rb") as f:
             degree_scaler = pickle.load(f)
     return degree_scaler
+
 @lru_cache()
 def load_sentiment_analyzer():
     global sentiment_analyzer
     if sentiment_analyzer is None:
         sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
     return sentiment_analyzer
+
 API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-
+WHISPER_API_KEY = os.getenv("WHISPER_API_KEY")
+WHISPER_ENDPOINT = os.getenv("WHISPER_ENDPOINT")
 
 # Screening Questions
 screening_questions = [
@@ -77,14 +83,16 @@ screening_questions = [
     "Does your child speaking early?:",
     "Does your child use simple gestures? (e.g. wave goodbye)",
     "Does your child stare at nothing with no apparent purpose?",
-    "What is your child’s age in months?",
+    "What is your child’s age in years?",
     "What is the sex of your child (Male/Female)?",
     "Has your child ever had jaundice?",
     "Does there a family member with ASD (Autism Spectrum Disorder)?"
 ]
 
-# Degree Questions & Mappings
+# Degree Questions & Mappings (الآن تتضمن العمر والجنس)
 degree_questions = [
+    "What is your child’s age in years?",
+    "What is the sex of your child (Male/Female)?",
     "Please describe your child's communication abilities in your own words.",
     "Please describe your child's social communication and interaction skills.",
     "Please describe your child's non-verbal communication abilities.",
@@ -95,13 +103,15 @@ degree_questions = [
 ]
 
 degree_display_mappings_per_question = {
-    degree_questions[0]: {0: "Non-Verbal", 1: "Just Few Words", 2: "Verbal"},
-    degree_questions[1]: {0: "Mild", 1: "Moderate", 2: "Severe"},
-    degree_questions[2]: {0: "Poor", 1: "Good", 2: "Very Good"},
-    degree_questions[3]: {0: "No", 1: "Sometimes", 2: "Yes"},
-    degree_questions[4]: {0: "No", 1: "Sometimes", 2: "Yes"},
-    degree_questions[5]: {0: "Mild", 1: "Moderate", 2: "Severe"},
-    degree_questions[6]: {
+        degree_questions[0]: {0: "0-3", 1: "4-6", 2: "7-9", 3: "10-12", 4: "12 and above"},
+    degree_questions[1]: {0: "Female", 1: "Male"},
+    degree_questions[2]: {0: "Non-Verbal", 1: "Just Few Words", 2: "Verbal"},
+    degree_questions[3]: {0: "Mild", 1: "Moderate", 2: "Severe"},
+    degree_questions[4]: {0: "Poor", 1: "Good", 2: "Very Good"},
+    degree_questions[5]: {0: "No", 1: "Sometimes", 2: "Yes"},
+    degree_questions[6]: {0: "No", 1: "Sometimes", 2: "Yes"},
+    degree_questions[7]: {0: "Mild", 1: "Moderate", 2: "Severe"},
+    degree_questions[8]: {
         0: "Attention Deficit Hyperactivity Disorder (ADHD)",
         1: "Specific Learning Difficulties",
         2: "Epilepsy",
@@ -110,6 +120,15 @@ degree_display_mappings_per_question = {
         5: "None"
     }
 }
+def map_age_to_bucket(answer: str):
+    numbers = re.findall(r"\d+", answer)
+    if not numbers:
+        return None
+    age = float(numbers[0])
+    if "month" in answer.lower():
+        age = age / 12
+    return bucket_age(age)
+
 
 # Azure OpenAI response
 def get_azure_response(system_prompt, user_prompt, retries=3, delay=5):
@@ -139,6 +158,21 @@ def get_azure_response(system_prompt, user_prompt, retries=3, delay=5):
             logging.error(f"Azure API error: {response.status_code}")
             return None
     return None
+
+def transcribe_audio(audio: UploadFile):
+    try:
+        audio_data = audio.file.read()
+        headers = {"Authorization": f"Bearer {WHISPER_API_KEY}"}
+        files = {"file": (audio.filename, audio_data, audio.content_type)}
+        response = requests.post(WHISPER_ENDPOINT, headers=headers, files=files)
+        if response.status_code == 200:
+            return response.json()["text"]
+        else:
+            logging.error(f"Whisper API error: {response.status_code}")
+            return None
+    except Exception as e:
+        logging.error(f"Error in transcribe_audio: {e}")
+        return None
 
 def get_response_from_openai(question, answer, retries=3, delay=5):
     headers = {'Content-Type': 'application/json', 'api-key': API_KEY}
@@ -184,22 +218,30 @@ def check_relevance(question, answer):
     return get_response_from_openai(question, answer)
 
 def process_screening_answer(index, answer):
-    if index == 10:  # Age
+    if index == 10:  # Age → Convert from years to months
         numbers = re.findall(r"\d+", answer)
         if not numbers:
             return None
-        age = float(numbers[0])
-        return age if "year" in answer.lower() else age / 12
-    elif index == 11:  # Gender
-        answer = answer.lower()
-        return 1 if any(word in answer for word in ["male", "boy"]) else 0 if any(word in answer for word in ["female", "girl"]) else None
+        age_years = float(numbers[0])
+        return age_years * 12  # always convert to months
+
+    elif index == 11:  # Gender → Expect male/female or 1/0
+        answer = answer.strip().lower()
+        if answer in ["male", "1"]:
+            return 1
+        elif answer in ["female", "0"]:
+            return 0
+        else:
+            return None
+
     else:
-        load_sentiment_analyzer()  # تحميل النموذج إذا لم يكن محملًا
+        load_sentiment_analyzer()
         result = sentiment_analyzer(answer)[0]
         return 1 if result['label'] == "POSITIVE" else 0
 
+
 def bucket_age(age_years):
-    if age_years < 4: return "1-3"
+    if age_years < 4: return "0-3"
     elif age_years < 7: return "4-6"
     elif age_years < 10: return "7-9"
     elif age_years < 13: return "10-12"
