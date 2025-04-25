@@ -103,7 +103,7 @@ degree_questions = [
 ]
 
 degree_display_mappings_per_question = {
-        degree_questions[0]: {0: "0-3", 1: "4-6", 2: "7-9", 3: "10-12", 4: "12 and above"},
+    degree_questions[0]: {0: "0-3", 1: "4-6", 2: "7-9", 3: "10-12", 4: "12 and above"},
     degree_questions[1]: {0: "Female", 1: "Male"},
     degree_questions[2]: {0: "Non-Verbal", 1: "Just Few Words", 2: "Verbal"},
     degree_questions[3]: {0: "Mild", 1: "Moderate", 2: "Severe"},

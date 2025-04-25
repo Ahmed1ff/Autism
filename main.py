@@ -143,16 +143,27 @@ def process_degree_answer(data: DegreeAnswerRequest):
             return {"success": False, "message": "Specify gender as 'Male' or 'Female'."}
 
     # LLM mapping for other questions
-    options = ", ".join([f"{k}: {v}" for k, v in mapping.items()])
+    options_list = [f"{k}: {v}" for k, v in mapping.items()]
     user_prompt = (
+        f"Please determine which of the following best matches the user input.\n\n"
         f"Question: {question}\nUser Answer: {data.answer}\n"
-        f"Possible responses: {options}. Select the number only."
+        f"Options:\n" + "\n".join(options_list) +
+        "\n\nReturn ONLY the corresponding number (e.g., 0 or 1 or 2). No explanation, just the number."
     )
     system_prompt = SYSTEM_PROMPT_CONTENT
     result = get_azure_response(system_prompt, user_prompt)
+
+    print("🔍 Azure result:", result)  # (اختياري للمراجعة)
+
+    # حاول تستخرج رقم من الرد
     nums = re.findall(r"\d+", result or "")
     if not nums:
+        # fallback لو رجع وصف بدل رقم
+        for k, v in mapping.items():
+            if v.lower() in (result or "").lower():
+                return {"success": True, "mapped_value": v, "category_number": k}
         return {"success": False, "message": "Could not extract mapping number."}
+
     num = int(nums[0])
     if num not in mapping:
         return {"success": False, "message": "Returned number not in mapping."}
