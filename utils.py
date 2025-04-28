@@ -177,12 +177,18 @@ def transcribe_audio(audio: UploadFile):
 def get_response_from_openai(question, answer, retries=3, delay=5):
     headers = {'Content-Type': 'application/json', 'api-key': API_KEY}
     prompt_text = (
-        f"Question: {question}\n"
-        f"User Answer: {answer}\n"
-        "Determine if the user's answer is relevant to the question. The answer may be written in English or Arabic, and it may contain typos, informal language, "
-        "or non-standard expressions. Even if the answer is negative, if it directly addresses the question, consider it relevant. "
-        "Correct minor errors if needed and respond only with 'relevant' or 'not relevant'."
-    )
+    f"Question: {question}\n"
+    f"User Answer: {answer}\n\n"
+    "Instructions:\n"
+    "- Deeply understand the question's intent and the user's answer.\n"
+    "- Normalize typos, informal language, slang, and infer the intended meaning.\n"
+    "- VERY IMPORTANT: Even if the answer is extremely short (one or two words), if it carries a meaning that relates to the question's topic, classify it as **relevant**.\n"
+    "- If the answer acknowledges, describes, reacts to, evaluates, or responds in any meaningful way to the question, even briefly, classify it as **relevant**.\n"
+    "- ONLY classify as **not relevant** if the answer has no semantic connection to the question.\n"
+    "- Focus on understanding the meaning, not on the length, format, completeness, or style.\n"
+    "- Short answers like 'moderate', 'yes', 'sometimes', or similar, can be relevant if they relate to the question's theme.\n"
+    "- Reply with exactly one word: relevant or not relevant (lowercase). Do not explain."
+)
     data = {
         'messages': [
             {
@@ -195,7 +201,7 @@ def get_response_from_openai(question, answer, retries=3, delay=5):
             {"role": "user", "content": prompt_text}
         ],
         'max_tokens': 50,
-        'temperature': 0.7
+        'temperature': 0.2
     }
 
     for attempt in range(retries):
