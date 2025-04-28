@@ -200,7 +200,7 @@ def get_response_from_openai(question, answer, retries=3, delay=5):
             },
             {"role": "user", "content": prompt_text}
         ],
-        'max_tokens': 50,
+        'max_tokens': 300,
         'temperature': 0.2
     }
 
