@@ -181,14 +181,19 @@ def get_response_from_openai(question, answer, retries=3, delay=5):
     f"User Answer: {answer}\n\n"
     "Instructions:\n"
     "- Deeply understand the question's intent and the user's answer.\n"
-    "- Normalize typos, informal language, slang, and infer the intended meaning.\n"
-    "- VERY IMPORTANT: Even if the answer is extremely short (one or two words), if it carries a meaning that relates to the question's topic, classify it as **relevant**.\n"
-    "- If the answer acknowledges, describes, reacts to, evaluates, or responds in any meaningful way to the question, even briefly, classify it as **relevant**.\n"
-    "- ONLY classify as **not relevant** if the answer has no semantic connection to the question.\n"
-    "- Focus on understanding the meaning, not on the length, format, completeness, or style.\n"
-    "- Short answers like 'moderate', 'yes', 'sometimes', or similar, can be relevant if they relate to the question's theme.\n"
+    "- Normalize typos, informal language, slang, and infer the intended meaning **only if the text contains real, meaningful words or phrases**.\n"
+    "- VERY IMPORTANT: Ignore meaningless sounds, random letters, repeated characters, or invented/nonexistent words (like 'pppp', 'aaa', 'xyz', 'ليليلويليسكلي', 'بيس'). These are **not relevant**.\n"
+    "- If the answer contains only general actions unrelated to the question (like 'he plays', 'she runs'), classify as **not relevant**.\n"
+    "- If the answer contains mixed-language text (e.g., Arabic + English) and one of the parts has no clear meaning, classify as **not relevant**.\n"
+    "- ONLY classify as **relevant** if the answer contains meaningful content that clearly addresses the question's topic.\n"
+    "- Short answers like 'moderate', 'yes', 'sometimes', or similar can be relevant if they directly address the question.\n"
+    "- Focus strictly on meaningful content, not just presence of child-related or activity-related words or partial phrases.\n"
     "- Reply with exactly one word: relevant or not relevant (lowercase). Do not explain."
 )
+
+
+
+
     data = {
         'messages': [
             {
