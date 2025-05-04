@@ -182,15 +182,14 @@ def get_response_from_openai(question, answer, retries=3, delay=5):
     "Instructions:\n"
     "- Deeply understand the question's intent and the user's answer.\n"
     "- Normalize typos, informal language, slang, and infer the intended meaning **only if the text contains real, meaningful words or phrases**.\n"
-    "- VERY IMPORTANT: Ignore meaningless sounds, random letters, repeated characters, or invented/nonexistent words (like 'pppp', 'aaa', 'xyz', 'ليليلويليسكلي', 'بيس'). These are **not relevant**.\n"
+    "- VERY IMPORTANT: Ignore meaningless sounds, random letters, repeated characters, or invented/nonexistent words (like 'pppp', 'aaa', 'xyz', 'ليليلويليسكلي'). These are **not relevant**.\n"
     "- If the answer contains only general actions unrelated to the question (like 'he plays', 'she runs'), classify as **not relevant**.\n"
-    "- If the answer contains mixed-language text (e.g., Arabic + English) and one of the parts has no clear meaning, classify as **not relevant**.\n"
+    "- If the answer contains mixed-language text (e.g., Arabic + English) without a clear and meaningful connection, classify as **not relevant**.\n"
     "- ONLY classify as **relevant** if the answer contains meaningful content that clearly addresses the question's topic.\n"
     "- Short answers like 'moderate', 'yes', 'sometimes', or similar can be relevant if they directly address the question.\n"
-    "- Focus strictly on meaningful content, not just presence of child-related or activity-related words or partial phrases.\n"
+    "- Focus strictly on meaningful content, not just presence of child-related or activity-related words.\n"
     "- Reply with exactly one word: relevant or not relevant (lowercase). Do not explain."
 )
-
 
 
 
