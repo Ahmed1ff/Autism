@@ -185,11 +185,13 @@ def get_response_from_openai(question, answer, retries=3, delay=5):
     "- VERY IMPORTANT: Ignore meaningless sounds, random letters, repeated characters, or invented/nonexistent words (like 'pppp', 'aaa', 'xyz', 'ليليلويليسكلي'). These are **not relevant**.\n"
     "- If the answer contains only general actions unrelated to the question (like 'he plays', 'she runs'), classify as **not relevant**.\n"
     "- If the answer contains mixed-language text (e.g., Arabic + English) without a clear and meaningful connection, classify as **not relevant**.\n"
-    "- ONLY classify as **relevant** if the answer contains meaningful content that clearly addresses the question's topic.\n"
-    "- Short answers like 'moderate', 'yes', 'sometimes', or similar can be relevant if they directly address the question.\n"
+    "- Short or general answers like 'good', 'moderate', 'yes', or 'sometimes' **can be relevant** if they logically address the question's topic — e.g., if the question is about communication and the answer is 'good', this implies good communication.\n"
+    "- ONLY classify as **relevant** if the answer contains meaningful content that clearly or reasonably addresses the question's topic.\n"
     "- Focus strictly on meaningful content, not just presence of child-related or activity-related words.\n"
     "- Reply with exactly one word: relevant or not relevant (lowercase). Do not explain."
 )
+
+
 
 
 
